@@ -250,6 +250,8 @@ struct k8s_events *k8s_events_conf_create(struct flb_input_instance *ins)
         }
         else {
             flb_plg_error(ctx->ins, "invalid database 'db.sync' value: %s", tmp);
+            k8s_events_conf_destroy(ctx);
+            return NULL;
         }
     }
 
