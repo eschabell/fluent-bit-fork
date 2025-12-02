@@ -192,7 +192,7 @@ static struct flb_config_map config_map[] = {
     {
      FLB_CONFIG_MAP_STR, "path_sysfs", "/sys",
      0, FLB_TRUE, offsetof(struct in_gpu_metrics, path_sysfs),
-     "sysfs mount point"
+     "sysfs mount point."
     },
     {
      FLB_CONFIG_MAP_TIME, "scrape_interval", "5",
