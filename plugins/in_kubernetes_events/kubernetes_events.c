@@ -1099,17 +1099,6 @@ static struct flb_config_map config_map[] = {
     },
 #endif
 
-    {
-     FLB_CONFIG_MAP_INT, "dns_retries", "6",
-     0, FLB_TRUE, offsetof(struct k8s_events, dns_retries),
-     "dns lookup retries N times until the network starts working"
-    },
-    {
-     FLB_CONFIG_MAP_TIME, "dns_wait_time", "30",
-     0, FLB_TRUE, offsetof(struct k8s_events, dns_wait_time),
-     "dns interval between network status checks"
-    },
-
     /* EOF */
     {0}
 };
