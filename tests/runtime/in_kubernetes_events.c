@@ -307,9 +307,7 @@ static struct test_ctx *test_ctx_create(struct flb_lib_out_cb *data)
 static struct test_ctx *test_ctx_create_with_config(struct flb_lib_out_cb *data,
                                                     const char *db_sync,
                                                     const char *db_locking,
-                                                    const char *db_journal_mode,
-                                                    const char *dns_retries,
-                                                    const char *dns_wait_time)
+                                                    const char *db_journal_mode)
 {
     int i_ffd;
     int o_ffd;
@@ -359,14 +357,6 @@ static struct test_ctx *test_ctx_create_with_config(struct flb_lib_out_cb *data,
     }
     if (db_journal_mode) {
         ret = flb_input_set(ctx->flb, i_ffd, "db.journal_mode", db_journal_mode, NULL);
-        TEST_CHECK(ret == 0);
-    }
-    if (dns_retries) {
-        ret = flb_input_set(ctx->flb, i_ffd, "dns_retries", dns_retries, NULL);
-        TEST_CHECK(ret == 0);
-    }
-    if (dns_wait_time) {
-        ret = flb_input_set(ctx->flb, i_ffd, "dns_wait_time", dns_wait_time, NULL);
         TEST_CHECK(ret == 0);
     }
 
@@ -539,9 +529,7 @@ void flb_test_config_db_sync_values()
         ctx = test_ctx_create_with_config(&cb_data,
                                           sync_values[i],  /* db.sync */
                                           NULL,            /* db.locking */
-                                          NULL,            /* db.journal_mode */
-                                          NULL,            /* dns_retries */
-                                          NULL);           /* dns_wait_time */
+                                          NULL);           /* db.journal_mode */
         if (!TEST_CHECK(ctx != NULL)) {
             TEST_MSG("test_ctx_create_with_config failed for db.sync=%s", sync_values[i]);
             continue;
@@ -575,9 +563,7 @@ void flb_test_config_db_journal_mode_values()
         ctx = test_ctx_create_with_config(&cb_data,
                                           NULL,              /* db.sync */
                                           NULL,              /* db.locking */
-                                          journal_modes[i],  /* db.journal_mode */
-                                          NULL,              /* dns_retries */
-                                          NULL);             /* dns_wait_time */
+                                          journal_modes[i]); /* db.journal_mode */
         if (!TEST_CHECK(ctx != NULL)) {
             TEST_MSG("test_ctx_create_with_config failed for db.journal_mode=%s", journal_modes[i]);
             continue;
@@ -611,9 +597,7 @@ void flb_test_config_db_locking_values()
         ctx = test_ctx_create_with_config(&cb_data,
                                           NULL,              /* db.sync */
                                           locking_values[i], /* db.locking */
-                                          NULL,              /* db.journal_mode */
-                                          NULL,              /* dns_retries */
-                                          NULL);             /* dns_wait_time */
+                                          NULL);             /* db.journal_mode */
         if (!TEST_CHECK(ctx != NULL)) {
             TEST_MSG("test_ctx_create_with_config failed for db.locking=%s", locking_values[i]);
             continue;
@@ -631,38 +615,6 @@ void flb_test_config_db_locking_values()
     }
 }
 
-/* Test dns_retries and dns_wait_time config */
-void flb_test_config_dns_options()
-{
-    struct flb_lib_out_cb cb_data;
-    struct test_ctx *ctx;
-    int ret;
-
-    cb_data.cb = NULL;
-    cb_data.data = NULL;
-
-    ctx = test_ctx_create_with_config(&cb_data,
-                                      NULL,   /* db.sync */
-                                      NULL,   /* db.locking */
-                                      NULL,   /* db.journal_mode */
-                                      "10",   /* dns_retries */
-                                      "60");  /* dns_wait_time */
-    if (!TEST_CHECK(ctx != NULL)) {
-        TEST_MSG("test_ctx_create_with_config failed for dns options");
-        return;
-    }
-
-    ret = flb_start(ctx->flb);
-    TEST_CHECK(ret == 0);
-    if (ret != 0) {
-        TEST_MSG("flb_start failed for dns options");
-    }
-
-    flb_stop(ctx->flb);
-    flb_destroy(ctx->flb);
-    flb_free(ctx);
-}
-
 TEST_LIST = {
     {"events_v1_with_lastTimestamp", flb_test_events_v1_with_lastTimestamp},
     {"events_v1_with_creationTimestamp", flb_test_events_v1_with_creationTimestamp},
@@ -670,7 +622,6 @@ TEST_LIST = {
     {"config_db_sync_values", flb_test_config_db_sync_values},
     {"config_db_journal_mode_values", flb_test_config_db_journal_mode_values},
     {"config_db_locking_values", flb_test_config_db_locking_values},
-    {"config_dns_options", flb_test_config_dns_options},
     {NULL, NULL}
 };
 
